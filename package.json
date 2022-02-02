@@ -1,6 +1,6 @@
 {
   "name": "shurjopay",
-  "version": "0.10.0",
+  "version": "0.10.2",
   "description": "shurjoPay2 nodejs integration",
   "main": "index.js",
   "engines": {

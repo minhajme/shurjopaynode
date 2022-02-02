@@ -26,8 +26,6 @@ Loading the module gets us a factory function, calling it instantiates the modul
 ```javascript
 const sp_factory = require('shurjopay');
 const shurjopay = sp_factory();
-// now set environment to live
-shurjopay.is_live();
 
 //  The minimum config/environment variables that your site need to maintain(config related to shurjopay)
 const spConfig = {
@@ -36,35 +34,66 @@ const spConfig = {
     "client_key_prefix": "sp",
     "currency": "BDT"
 }
-// Now call the object configure method
+
+shurjopay.is_live();
 shurjopay.configure_merchant(spConfig.client_id, spConfig.client_secret, spConfig.client_key_prefix, spConfig.currency);
 
 // Now proceed with the rest of your route and controller logic. 
 ```
 
-The object provides methods that you need to use are:
+### The instance object provides methods and attributes that you need to use are:
 
 - Payment operation methods: `checkout`, `verify`, `check_status`, `token_valid`.
-- Configuration methods: `configure_merchant`
+- Configuration methods: `configure_merchant`, `is_live`
 - Error handler methods: `gettoken_error_handler`, `checkout_error_handler`
 - Callback handler methods: `checkout_callback`
-- Module's own settings object: `sp.settings`
-- Store session accessor: `sp.session`
+- Module's own settings object: `sp.settings`. You may only check this for debug.
 
-#### In your route controllers, your workflow is (using three routes):
+### In your route controllers, your workflow is (using three routes):
 
 - At checkout->payment method, selecting shurjopay lands the buyer in _checkout_action_ route, where you initiate the transaction with cart details
-- At first configure the shurjopay object to set the merchant info
-- Then set the checkout_return and checkout_cancel callback url
-- Then set the session accessor
-- Then set error handlers, checkout callback
-- Then call the checkout method
+- At first set the plugin environment to live by calling `shurjopay.is_live()` 
+- Now configure the merchant info with `shurjopay.configure_merchant(merchant_username, merchant_password, merchant_key_prefix, merchant_default_currency)`
+- Then set error handlers 
+- Then call the checkout method with order data
+```javascript
+    // req: http request object
+    // res: http response object
+    shurjopay.gettoken_error_handler = function (error){ 
+        req.session.message = `There was an error processing your payment. You have not been charged and can try again.${error}`;
+        req.session.messageType = 'danger';
+        console.log(error);
+        res.redirect('/checkout/information');
+    };
+    shurjopay.checkout_error_handler = function (error){
+        req.session.message = `There was an error processing your payment. You have not been charged and can try again.${error}`;
+        req.session.messageType = 'danger';
+        console.log(error);
+        res.redirect('/checkout/information');
+    };
 
-### An example route controller is already written for you (expressjs-mongodb)
+    // now trigger the checkout
+    shurjopay.checkout({
+        amount: req.session.totalCartAmount,
+        order_id: order_id,
+        return_url: `${your_store_config.baseUrl}/shurjopay/checkout_return`,
+        cancel_url: `${your_store_config.baseUrl}/shurjopay/checkout_cancel`,
+        customer_name: `${req.session.customerFirstname} ${req.session.customerLastname}`,
+        customer_address: req.session.customerAddress1,
+        customer_phone: req.session.customerPhone,
+        customer_city: req.session.customerState,
+        customer_post_code: req.session.customerPostcode,
+        client_ip: 'unknown'
+    }, (response_data, checkout_url) => {
+        // Now work with your session, cart, database insert and then redirect to checkout_url
+    });
+```
+
+### A fully functional route controller is provided as example (expressjs-mongodb)
 
 Check over the /examples folder.
 
-#### Some sample api response formats
+### Some sample api response formats, for debug purpose
 
 check the /docs folder.
 
