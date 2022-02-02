@@ -7,6 +7,9 @@
 - Check order status
 - Verify order id
 
+## Requirement
+- nodejs >=13.0
+
 ## Install
 
 ```shell
@@ -22,7 +25,21 @@ Loading the module gets us a factory function, calling it instantiates the modul
 
 ```javascript
 const sp_factory = require('shurjopay');
-const sp = sp_factory();
+const shurjopay = sp_factory();
+// now set environment to live
+shurjopay.is_live();
+
+//  The minimum config/environment variables that your site need to maintain(config related to shurjopay)
+const spConfig = {
+    "client_id": "your merchant id",
+    "client_secret": "your merchant password or secret token",
+    "client_key_prefix": "sp",
+    "currency": "BDT"
+}
+// Now call the object configure method
+shurjopay.configure_merchant(spConfig.client_id, spConfig.client_secret, spConfig.client_key_prefix, spConfig.currency);
+
+// Now proceed with the rest of your route and controller logic. 
 ```
 
 The object provides methods that you need to use are:
@@ -43,123 +60,13 @@ The object provides methods that you need to use are:
 - Then set error handlers, checkout callback
 - Then call the checkout method
 
-At first, you need to configure the object. The minimum config/environment variables that your site need to maintain(config related to shurjopay) are:
+### An example route controller is already written for you (expressjs-mongodb)
 
-```json
-{
-  "mode": "sandbox",
-  "client_id": "your merchant id",
-  "client_secret": "your merchant password or secret token",
-  "client_store_id": "1",
-  "client_key_prefix": "sp",
-  "currency": "BDT"
-}
-```
+Check over the /examples folder.
 
-### An example route controller
+#### Some sample api response formats
 
-Check over the example folder.
-
-### Response format examples
-
-#### verify
-
-```javascript
-response_data =
-    [
-        {
-            id: 3741,
-            order_id: 'sp61e678dd003c6',
-            currency: 'BDT',
-            amount: 500,
-            payable_amount: 500,
-            discsount_amount: null,
-            disc_percent: 0,
-            usd_amt: 0,
-            usd_rate: 0,
-            card_holder_name: null,
-            card_number: null,
-            phone_no: '01534303074',
-            bank_trx_id: '61e678eb',
-            invoice_no: 'sp61e678dd003c6',
-            bank_status: 'Success',
-            customer_order_id: 'c4xyxpytzk00',
-            sp_code: 1000,
-            sp_massage: 'Success',
-            name: 'Minhajul Anwar',
-            email: null,
-            address: '330 NIH BUT DHK',
-            city: 'Dhaka',
-            value1: null,
-            value2: null,
-            value3: null,
-            value4: null,
-            transaction_status: null,
-            method: 'Nagad',
-            date_time: '2022-01-18 14:23:07'
-        }
-    ]
-
-```
-
-#### check_status
-
-```javascript
-[
-    {
-        id: 3754,
-        order_id: 'sp61e69482835b5',
-        currency: 'BDT',
-        amount: 500,
-        payable_amount: 500,
-        discsount_amount: null,
-        disc_percent: 0,
-        usd_amt: 0,
-        usd_rate: 0,
-        card_holder_name: null,
-        card_number: null,
-        phone_no: '01534303074',
-        bank_trx_id: '61e6948f',
-        invoice_no: 'sp61e69482835b5',
-        bank_status: 'Success',
-        customer_order_id: 'dvijbs4f5s00',
-        sp_code: 1000,
-        sp_massage: 'Success',
-        name: 'Minhajul Anwar',
-        email: null,
-        address: '330 NIH BUT DHK',
-        city: 'Dhaka',
-        value1: null,
-        value2: null,
-        value3: null,
-        value4: null,
-        transaction_status: null,
-        method: 'Nagad',
-        date_time: '2022-01-18 16:21:03'
-    }
-]
-```
-
-#### checkout
-
-```javascript
-response_data = {
-    checkout_url: 'https://sandbox.securepay.shurjopayment.com/spaycheckout/?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvc2FuZGJveC5zaHVyam9wYXltZW50LmNvbVwvYXBpXC9sb2dpbiIsImlhdCI6MTY0MjQ5NTk3MiwiZXhwIjoxNjQyNDk5NTcyLCJuYmYiOjE2NDI0OTU5NzIsImp0aSI6Im1JcEFrNHJPZ1h4TklWVG4iLCJzdWIiOjEsInBydiI6IjgwNWYzOWVlZmNjNjhhZmQ5ODI1YjQxMjI3ZGFkMGEwNzZjNDk3OTMifQ.k_RnbXwWIEc8_NiGgR3c3d0GQhASXv_fjK2S_Wz_Ksw&order_id=sp61e67fe5a7a17',
-    amount: 500,
-    currency: 'BDT',
-    sp_order_id: 'sp61e67fe5a7a17',
-    customer_order_id: 'aobws09sa800',
-    customer_name: 'Minhajul Anwar',
-    customer_address: '330 NIH BUT DHK',
-    customer_city: 'Dhaka',
-    customer_phone: '01534303074',
-    customer_email: null,
-    client_ip: 'unknown',
-    intent: 'sale',
-    transactionStatus: 'Initiated'
-}
-
-```
+check the /docs folder.
 
 <!--
 ## Contact

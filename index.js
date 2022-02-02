@@ -38,10 +38,14 @@ function SP(){
         });
     };
 
-    this.configure_merchant = function (merchant_username, merchant_password, merchant_store_id, merchant_key_prefix, merchant_default_currency){
+    this.is_live = function() {
+        this.settings.sandbox = false;
+        return true;
+    };
+
+    this.configure_merchant = function (merchant_username, merchant_password, merchant_key_prefix, merchant_default_currency){
         this.settings.merchant_username = merchant_username;
         this.settings.merchant_password = merchant_password;
-        this.settings.merchant_store_id = merchant_store_id;
         this.settings.merchant_key_prefix = merchant_key_prefix;
         this.settings.merchant_default_currency = merchant_default_currency;
     };
@@ -62,6 +66,7 @@ function SP(){
                     token_create_time: response.data.TokenCreateTime, //eg. 2022-01-13 10:55:12am
                     token_valid_duration: response.data.expires_in ////eg. 3600
                 };
+                _this.settings.merchant_store_id = response.data.store_id;
                 callback(response.data, response.data.token, response.data.token_type, response.data.TokenCreateTime, response.data.expires_in);
             }).catch(function (getToken_error){
             _this.gettoken_error_handler(getToken_error);

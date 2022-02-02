@@ -8,7 +8,8 @@ const router = express.Router();
 
 const spConfig = getPaymentConfig('shurjopay');
 // configure the shurjopayment object
-shurjopay.configure_merchant(spConfig.client_id, spConfig.client_secret, spConfig.client_store_id, spConfig.client_key_prefix, spConfig.currency);
+shurjopay.is_live();
+shurjopay.configure_merchant(spConfig.client_id, spConfig.client_secret, spConfig.client_key_prefix, spConfig.currency);
 
 router.get('/checkout_cancel', (req, res, next) => {
     const db = req.app.db;
